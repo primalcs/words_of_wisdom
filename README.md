@@ -1,0 +1,1 @@
+# words_of_wisdom
