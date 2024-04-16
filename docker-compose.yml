@@ -1,0 +1,55 @@
+version: "3.8"
+services:
+
+  client1:
+    container_name: client1
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    env_file:
+      - .env
+    networks:
+      - client-server-net
+    depends_on:
+      - server
+
+  client2:
+    container_name: client2
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    env_file:
+      - .env
+    networks:
+      - client-server-net
+    depends_on:
+      - server
+
+  server:
+    container_name: server
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    networks:
+      - redis-net
+      - client-server-net
+    depends_on:
+      - redis
+
+  redis:
+    container_name: ${REDIS_HOST}
+    image: redis:alpine
+    restart: always
+    networks:
+      - redis-net
+    expose:
+      - 6379
+    ports:
+      - '${REDIS_PORT}:6379'
+
+
+networks:
+  redis-net:
+  client-server-net:

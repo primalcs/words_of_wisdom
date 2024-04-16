@@ -1,0 +1,21 @@
+FROM golang:alpine AS build-env
+
+WORKDIR /
+
+COPY . .
+
+RUN apk add --no-cache $PACKAGES && go build -o main ./cmd/client
+
+FROM alpine:edge
+
+# Install ca-certificates
+RUN apk add --update ca-certificates bash curl
+WORKDIR /
+COPY .env .env
+
+# Copy over binaries from the build-env
+COPY --from=build-env /main /main
+
+RUN chmod +x ./main
+
+CMD ["./main"]
